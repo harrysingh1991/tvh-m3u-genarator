@@ -1,0 +1,136 @@
+<html>
+<head>
+    <title>TVHeadend Playlist Server</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+    <h1>TVHeadend Playlist Server</h1>
+    <h2>Information</h2>
+    <table class="match-width-table">
+        <tr>
+            <th>Setting</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Container Start Time:</td>
+            <td>{{ container_start_str }}</td>
+        </tr>
+        <tr>
+            <td>Server Host:</td>
+            <td>{{TVH_HOST}}</td>
+        </tr>
+        <tr>
+            <td>Server Port:</td>
+            <td>{{TVH_PORT}}</td>
+        </tr>
+        <tr>
+            <td>User/s:</td>
+            <td>{{user_list_str}}</td>
+        </tr>
+        <tr>
+            <td>Playlist Update Schedule:</td>
+            <td>{{REFRESH_SCHEDULE_HUMAN}}</td>
+        </tr>
+        <tr>
+          <td>Playlist Last Updated:</td>
+          <td>
+            {% if last_update_str and last_update_str != "Never" %}
+              {{ last_update_str }}
+            {% else %}
+              <span style="color:orange;">No playlist data available yet.</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+            <th>Next Playlist Update:</th>
+            <td>{{ next_playlist_update_str }}</td>
+        </tr>
+    </table>
+    <h2>EPG Retention</h2>
+    <table class="match-width-table">
+        <tr>
+            <th>Setting</th>
+            <th>Value</th>
+        </tr>
+        {% if EPG_RETENTION_ENABLED %}
+        <tr>
+            <td>EPG Retention:</td>
+            <td>Enabled</td>
+        </tr>
+        <tr>
+            <td>EPG Retention Days:</td>
+            <td>{{ EPG_RETENTION_DAYS }}</td>
+        </tr>
+        <tr>
+            <td>EPG Update Schedule:</td>
+            <td>{{ EPG_REFRESH_SCHEDULE_HUMAN }}</td>
+        </tr>
+        <tr>
+          <td>EPG Last Updated:</td>
+          <td>
+            {% if epg_last_update and epg_last_update != "Never" %}
+              {{ epg_last_update }}
+            {% else %}
+              <span style="color:orange;">No EPG data available yet.</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+            <td>Earliest Programme Date:</td>
+            <td>{{ epg_earliest }}</td>
+        </tr>
+        <tr>
+            <td>Latest Programme Date:</td>
+            <td>{{ epg_latest }}</td>
+        </tr>
+        <tr>
+            <th>Next EPG Update:</th>
+            <td>{{ next_epg_update_str }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td>EPG Retention:</td>
+            <td>Disabled</td>
+        </tr>
+        {% endif %}
+    </table>
+    <h2>Actions</h2>
+    <div class="action-buttons">
+        <a href="/manualplaylistrefresh"><button type="button">Refresh Channel List Now</button></a>
+        <a href="/manualepgrefresh"><button type="button">Refresh EPG Now</button></a>
+        <button id="toggleModeBtn" type="button">Toggle Dark/Light Mode</button>
+    </div>
+    <h2>Links</h2>
+    <ul>
+        <li><a href="/playlist.m3u">Download M3U Playlist</a></li>
+        <li><a href="/epg.xml">Download EPG XML</a></li>
+    </ul>
+    <h2>Channels</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Group</th>
+      <th>Name</th>
+      <th>Number</th>
+      <th>TVG ID</th>
+      <th>Channel ID</th>
+      <th class="centered">Logo</th>
+      <th class="centered">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if channel_rows.strip() %}
+      {{ channel_rows|safe }}
+    {% else %}
+      <tr>
+        <td colspan="7" style="color:orange; text-align:center;">
+          No channel list available yet. Waiting for next update.
+        </td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+</body>
+</html>
